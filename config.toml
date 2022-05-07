@@ -6,7 +6,7 @@ title = 'My Blog'
 theme = "paper"
 
 [params]
-    github=magiconline
+    github="magiconline"
 
 [menu]
     [[menu.main]]
