@@ -11,6 +11,6 @@ theme = "paper"
 [menu]
     [[menu.main]]
         identifier = "about"
-        name = "About"
+        name = "关于"
         url = "/about/"
-        weight = 10   
+        weight = 14   
