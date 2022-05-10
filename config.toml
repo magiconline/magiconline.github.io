@@ -11,5 +11,5 @@ theme = "paper"
 [menu]
     [[menu.main]]
         identifier = "about"
-        name = "about"
+        name = "About"
         url = "/about/"   
