@@ -1,0 +1,66 @@
+<!doctype html><html lang=en-us><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>Go性能优化建议 - 魔法张的Blog</title><meta name=description content="高性能编程 时间性能优化 Slice 尽量预分配内存，减少append操作扩容的频率。 Slice扩容时会复制原数组到新数组。 可使用 go test --bench=. --benchmem 查看内存分配次数、分配容量。
+Slice切片时不会新建数组，而是引用已有的数组。 可能导致一个小Slice切片自一个大Slice时，大Slice的内存不会被释放，可使用copy替代[:]操作。
+map 与Slice相同，可通过提前分配内存，减少内存拷贝和Rehash的消耗。
+字符串 字符串是不可变类型，使用的内存是固定的，每次用+都会重新分配内存。 使用strings.Builder拼接大量字符串，底层是[]bytes数组，不会每次都重新分配内存。 bytes.Buffer最后会重新创建一个新的字符串，因此稍慢。
+还可以使用builder.Grow(n)提前分配内存，减少申请内存次数。
+空间性能优化 使用空结构体节省内存 空结构体不占据任何内存空间，可作为各种场景下的占位符。
+应用场景：map[int]struct{}，通过map实现了set。
+多线程 线程安全 使用atomic包性能会比Mutex性能高。 因为Mutex通过操作系统实现，atomic操作通过硬件实现。
+Mutex用来保护一段逻辑，atomic用来保护一个变量。
+性能优化 性能优化原则  要依靠数据而不是猜测。 要定位最大瓶颈而不是细枝末节 不要过早优化 不要过度优化  性能分析工具 pprof 首页：http://localhost:6060/debug/pprof/
+查看CPU go tool pprof -http=:8080 &#34;http://localhost:6060/debug/pprof/profile?second=10&#34; top list Eat web 查看堆内存 go tool pprof -http=:8080 &#34;http:localhost:6060/debug/pprof/heap&#34; 可切换当前/累计 内存/对象数据，查找未使用的内存。
+goroutine go tool pprof -http=:8080 &#34;http://localhost:6060/debug/pprof/goroutine&#34; 通过graph或火焰图分析。
+mutex go tool pprof -http=:8080 &#34;http://localhost:6060/debug/pprof/mutex&#34; block ThreadCreate pprof采样原理 CPU 在程序启动时，向操作系统加入一个10ms定时器。 到达时间后，记录一次CPU信息。 每100ms将记录写入输出流。"><meta name=author content><link rel="preload stylesheet" as=style href=https://magiconline.github.io/app.min.css><link rel="preload stylesheet" as=style href=https://magiconline.github.io/an-old-hope.min.css><script defer src=https://magiconline.github.io/highlight.min.js onload=hljs.initHighlightingOnLoad()></script>
+<link rel=preload as=image href=https://magiconline.github.io/theme.png><link rel=preload as=image href=https://magiconline.github.io/github.svg><link rel=icon href=https://magiconline.github.io/favicon.ico><link rel=apple-touch-icon href=https://magiconline.github.io/apple-touch-icon.png><meta name=generator content="Hugo 0.98.0"><meta property="og:title" content="Go性能优化建议"><meta property="og:description" content="高性能编程 时间性能优化 Slice 尽量预分配内存，减少append操作扩容的频率。 Slice扩容时会复制原数组到新数组。 可使用 go test --bench=. --benchmem 查看内存分配次数、分配容量。
+Slice切片时不会新建数组，而是引用已有的数组。 可能导致一个小Slice切片自一个大Slice时，大Slice的内存不会被释放，可使用copy替代[:]操作。
+map 与Slice相同，可通过提前分配内存，减少内存拷贝和Rehash的消耗。
+字符串 字符串是不可变类型，使用的内存是固定的，每次用+都会重新分配内存。 使用strings.Builder拼接大量字符串，底层是[]bytes数组，不会每次都重新分配内存。 bytes.Buffer最后会重新创建一个新的字符串，因此稍慢。
+还可以使用builder.Grow(n)提前分配内存，减少申请内存次数。
+空间性能优化 使用空结构体节省内存 空结构体不占据任何内存空间，可作为各种场景下的占位符。
+应用场景：map[int]struct{}，通过map实现了set。
+多线程 线程安全 使用atomic包性能会比Mutex性能高。 因为Mutex通过操作系统实现，atomic操作通过硬件实现。
+Mutex用来保护一段逻辑，atomic用来保护一个变量。
+性能优化 性能优化原则  要依靠数据而不是猜测。 要定位最大瓶颈而不是细枝末节 不要过早优化 不要过度优化  性能分析工具 pprof 首页：http://localhost:6060/debug/pprof/
+查看CPU go tool pprof -http=:8080 &#34;http://localhost:6060/debug/pprof/profile?second=10&#34; top list Eat web 查看堆内存 go tool pprof -http=:8080 &#34;http:localhost:6060/debug/pprof/heap&#34; 可切换当前/累计 内存/对象数据，查找未使用的内存。
+goroutine go tool pprof -http=:8080 &#34;http://localhost:6060/debug/pprof/goroutine&#34; 通过graph或火焰图分析。
+mutex go tool pprof -http=:8080 &#34;http://localhost:6060/debug/pprof/mutex&#34; block ThreadCreate pprof采样原理 CPU 在程序启动时，向操作系统加入一个10ms定时器。 到达时间后，记录一次CPU信息。 每100ms将记录写入输出流。"><meta property="og:type" content="article"><meta property="og:url" content="https://magiconline.github.io/post/go-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E5%BB%BA%E8%AE%AE/"><meta property="article:section" content="post"><meta property="article:published_time" content="2022-05-11T20:55:03+08:00"><meta property="article:modified_time" content="2022-05-11T20:55:03+08:00"><meta itemprop=name content="Go性能优化建议"><meta itemprop=description content="高性能编程 时间性能优化 Slice 尽量预分配内存，减少append操作扩容的频率。 Slice扩容时会复制原数组到新数组。 可使用 go test --bench=. --benchmem 查看内存分配次数、分配容量。
+Slice切片时不会新建数组，而是引用已有的数组。 可能导致一个小Slice切片自一个大Slice时，大Slice的内存不会被释放，可使用copy替代[:]操作。
+map 与Slice相同，可通过提前分配内存，减少内存拷贝和Rehash的消耗。
+字符串 字符串是不可变类型，使用的内存是固定的，每次用+都会重新分配内存。 使用strings.Builder拼接大量字符串，底层是[]bytes数组，不会每次都重新分配内存。 bytes.Buffer最后会重新创建一个新的字符串，因此稍慢。
+还可以使用builder.Grow(n)提前分配内存，减少申请内存次数。
+空间性能优化 使用空结构体节省内存 空结构体不占据任何内存空间，可作为各种场景下的占位符。
+应用场景：map[int]struct{}，通过map实现了set。
+多线程 线程安全 使用atomic包性能会比Mutex性能高。 因为Mutex通过操作系统实现，atomic操作通过硬件实现。
+Mutex用来保护一段逻辑，atomic用来保护一个变量。
+性能优化 性能优化原则  要依靠数据而不是猜测。 要定位最大瓶颈而不是细枝末节 不要过早优化 不要过度优化  性能分析工具 pprof 首页：http://localhost:6060/debug/pprof/
+查看CPU go tool pprof -http=:8080 &#34;http://localhost:6060/debug/pprof/profile?second=10&#34; top list Eat web 查看堆内存 go tool pprof -http=:8080 &#34;http:localhost:6060/debug/pprof/heap&#34; 可切换当前/累计 内存/对象数据，查找未使用的内存。
+goroutine go tool pprof -http=:8080 &#34;http://localhost:6060/debug/pprof/goroutine&#34; 通过graph或火焰图分析。
+mutex go tool pprof -http=:8080 &#34;http://localhost:6060/debug/pprof/mutex&#34; block ThreadCreate pprof采样原理 CPU 在程序启动时，向操作系统加入一个10ms定时器。 到达时间后，记录一次CPU信息。 每100ms将记录写入输出流。"><meta itemprop=datePublished content="2022-05-11T20:55:03+08:00"><meta itemprop=dateModified content="2022-05-11T20:55:03+08:00"><meta itemprop=wordCount content="98"><meta itemprop=keywords content><meta name=twitter:card content="summary"><meta name=twitter:title content="Go性能优化建议"><meta name=twitter:description content="高性能编程 时间性能优化 Slice 尽量预分配内存，减少append操作扩容的频率。 Slice扩容时会复制原数组到新数组。 可使用 go test --bench=. --benchmem 查看内存分配次数、分配容量。
+Slice切片时不会新建数组，而是引用已有的数组。 可能导致一个小Slice切片自一个大Slice时，大Slice的内存不会被释放，可使用copy替代[:]操作。
+map 与Slice相同，可通过提前分配内存，减少内存拷贝和Rehash的消耗。
+字符串 字符串是不可变类型，使用的内存是固定的，每次用+都会重新分配内存。 使用strings.Builder拼接大量字符串，底层是[]bytes数组，不会每次都重新分配内存。 bytes.Buffer最后会重新创建一个新的字符串，因此稍慢。
+还可以使用builder.Grow(n)提前分配内存，减少申请内存次数。
+空间性能优化 使用空结构体节省内存 空结构体不占据任何内存空间，可作为各种场景下的占位符。
+应用场景：map[int]struct{}，通过map实现了set。
+多线程 线程安全 使用atomic包性能会比Mutex性能高。 因为Mutex通过操作系统实现，atomic操作通过硬件实现。
+Mutex用来保护一段逻辑，atomic用来保护一个变量。
+性能优化 性能优化原则  要依靠数据而不是猜测。 要定位最大瓶颈而不是细枝末节 不要过早优化 不要过度优化  性能分析工具 pprof 首页：http://localhost:6060/debug/pprof/
+查看CPU go tool pprof -http=:8080 &#34;http://localhost:6060/debug/pprof/profile?second=10&#34; top list Eat web 查看堆内存 go tool pprof -http=:8080 &#34;http:localhost:6060/debug/pprof/heap&#34; 可切换当前/累计 内存/对象数据，查找未使用的内存。
+goroutine go tool pprof -http=:8080 &#34;http://localhost:6060/debug/pprof/goroutine&#34; 通过graph或火焰图分析。
+mutex go tool pprof -http=:8080 &#34;http://localhost:6060/debug/pprof/mutex&#34; block ThreadCreate pprof采样原理 CPU 在程序启动时，向操作系统加入一个10ms定时器。 到达时间后，记录一次CPU信息。 每100ms将记录写入输出流。"></head><body class=not-ready data-menu=true><header class=header><p class=logo><a class=site-name href=https://magiconline.github.io/>魔法张的Blog</a><a class=btn-dark></a></p><script>let bodyClx=document.body.classList,btnDark=document.querySelector(".btn-dark"),sysDark=window.matchMedia("(prefers-color-scheme: dark)"),darkVal=localStorage.getItem("dark"),setDark=e=>{bodyClx[e?"add":"remove"]("dark"),localStorage.setItem("dark",e?"yes":"no")};setDark(darkVal?darkVal==="yes":sysDark.matches),requestAnimationFrame(()=>bodyClx.remove("not-ready")),btnDark.addEventListener("click",()=>setDark(!bodyClx.contains("dark"))),sysDark.addEventListener("change",e=>setDark(e.matches))</script><nav class=menu><a href=/about/>About</a></nav><nav class=social><a class=github style=--url:url(./github.svg) href=https://github.com/magiconline target=_blank></a></nav></header><main class=main><article class=post-single><header class=post-title><p><time>May 11, 2022</time></p><h1>Go性能优化建议</h1></header><section class=post-content><h1 id=高性能编程>高性能编程</h1><h2 id=时间性能优化>时间性能优化</h2><h3 id=slice>Slice</h3><p>尽量预分配内存，减少append操作扩容的频率。
+Slice扩容时会复制原数组到新数组。
+可使用 <code>go test --bench=. --benchmem</code> 查看内存分配次数、分配容量。</p><p>Slice切片时不会新建数组，而是引用已有的数组。
+可能导致一个小Slice切片自一个大Slice时，大Slice的内存不会被释放，可使用<code>copy</code>替代<code>[:]</code>操作。</p><h3 id=map>map</h3><p>与Slice相同，可通过提前分配内存，减少内存拷贝和Rehash的消耗。</p><h3 id=字符串>字符串</h3><p>字符串是不可变类型，使用的内存是固定的，每次用<code>+</code>都会重新分配内存。
+使用<code>strings.Builder</code>拼接大量字符串，底层是<code>[]bytes</code>数组，不会每次都重新分配内存。
+<code>bytes.Buffer</code>最后会重新创建一个新的字符串，因此稍慢。</p><p>还可以使用<code>builder.Grow(n)</code>提前分配内存，减少申请内存次数。</p><h2 id=空间性能优化>空间性能优化</h2><h3 id=使用空结构体节省内存>使用空结构体节省内存</h3><p>空结构体不占据任何内存空间，可作为各种场景下的占位符。</p><p>应用场景：<code>map[int]struct{}</code>，通过map实现了set。</p><h2 id=多线程>多线程</h2><h3 id=线程安全>线程安全</h3><p>使用<code>atomic</code>包性能会比<code>Mutex</code>性能高。
+因为<code>Mutex</code>通过操作系统实现，<code>atomic</code>操作通过硬件实现。</p><p><code>Mutex</code>用来保护一段逻辑，<code>atomic</code>用来保护一个变量。</p><h1 id=性能优化>性能优化</h1><h2 id=性能优化原则>性能优化原则</h2><ul><li>要依靠数据而不是猜测。</li><li>要定位最大瓶颈而不是细枝末节</li><li>不要过早优化</li><li>不要过度优化</li></ul><h2 id=性能分析工具-pprof>性能分析工具 pprof</h2><p>首页：http://localhost:6060/debug/pprof/</p><h3 id=查看cpu>查看CPU</h3><pre tabindex=0><code>go tool pprof -http=:8080 &#34;http://localhost:6060/debug/pprof/profile?second=10&#34;
+top
+list Eat
+web
+</code></pre><h3 id=查看堆内存>查看堆内存</h3><pre tabindex=0><code>go tool pprof -http=:8080 &#34;http:localhost:6060/debug/pprof/heap&#34;
+</code></pre><p>可切换当前/累计 内存/对象数据，查找未使用的内存。</p><h3 id=goroutine>goroutine</h3><pre tabindex=0><code>go tool pprof -http=:8080 &#34;http://localhost:6060/debug/pprof/goroutine&#34;
+</code></pre><p>通过graph或火焰图分析。</p><h3 id=mutex>mutex</h3><pre tabindex=0><code>go tool pprof -http=:8080 &#34;http://localhost:6060/debug/pprof/mutex&#34;
+</code></pre><h3 id=block>block</h3><h3 id=threadcreate>ThreadCreate</h3><h2 id=pprof采样原理>pprof采样原理</h2><h3 id=cpu>CPU</h3><p>在程序启动时，向操作系统加入一个10ms定时器。
+到达时间后，记录一次CPU信息。
+每100ms将记录写入输出流。</p><h3 id=堆内存>堆内存</h3><p>通过内存分配器在堆上分配和释放内存，每分配512KB记录一次。
+记录时间从程序运行开始到采样时。</p><h3 id=协程和线程>协程和线程</h3><h3 id=阻塞和锁>阻塞和锁</h3><p>采样阻塞操作的次数和耗时，阻塞耗时超过阈值才会被记录，锁只记录固定比例的锁操作。</p><h1 id=性能调优案例>性能调优案例</h1><h2 id=业务服务优化>业务服务优化</h2><ul><li>简历服务性能评估手段</li><li>分析性能数据，定位性能瓶颈</li><li>重点优化项改造</li><li>优化效果验证</li></ul><h2 id=基础库优化>基础库优化</h2><ul><li>分析基础库的核心逻辑和性能瓶颈</li><li>内部压测验证</li><li>推广业务服务落地验证</li></ul><h2 id=go语言优化>Go语言优化</h2><p>编译器&运行时优化</p><ul><li>优化内存分配策略</li><li>优化代码编译流程</li><li>内部压测验证</li><li>推广业务服务落地验证</li></ul></section><nav class=post-nav><a class=next href=https://magiconline.github.io/post/%E7%94%9F%E6%88%90%E5%94%AF%E4%B8%80id%E7%9A%84%E6%96%B9%E5%BC%8F/><span>生成唯一ID的方式</span><span>→</span></a></nav></article></main><footer class=footer><p>&copy; 2022 <a href=https://magiconline.github.io/>魔法张的Blog</a></p><p>Powered by <a href=https://gohugo.io/ rel=noopener target=_blank>Hugo️️</a>️</p><p><a href=https://github.com/nanxiaobei/hugo-paper rel=noopener target=_blank>Paper 5.1</a></p></footer></body></html>
