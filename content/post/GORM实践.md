@@ -1,7 +1,7 @@
 ---
 title: "GORM实践"
 date: 2022-05-16T14:53:41+08:00
-draft: true
+draft: false
 ---
 
 # 1 简介

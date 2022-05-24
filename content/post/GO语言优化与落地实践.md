@@ -1,7 +1,7 @@
 ---
 title: "Go语言优化与落地实践"
 date: 2022-05-13T15:50:28+08:00
-draft: true
+draft: false
 ---
 
 # 自动内存管理
