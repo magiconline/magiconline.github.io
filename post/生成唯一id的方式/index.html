@@ -7,7 +7,7 @@ UUID 包含32个16进制数字，分为8-4-4-4-12的形式，性能高。 问题
 数据库自增主键 基于redis INCR原子操作 雪花算法 按照时间有序生成，结果是64bit的整数。
 结构：1bit符号位（一般为正数、固定为0），41bit时间戳（毫秒），10bit工作进程位（共1024个节点），12bit序列号（一个节点一毫秒内最多产生4096个ID）。
 生成的ID按时间趋势递增。"><meta name=author content><link rel="preload stylesheet" as=style href=https://magiconline.github.io/app.min.css><link rel="preload stylesheet" as=style href=https://magiconline.github.io/an-old-hope.min.css><script defer src=https://magiconline.github.io/highlight.min.js onload=hljs.initHighlightingOnLoad()></script>
-<link rel=preload as=image href=https://magiconline.github.io/theme.png><link rel=preload as=image href=https://magiconline.github.io/github.svg><link rel=icon href=https://magiconline.github.io/favicon.ico><link rel=apple-touch-icon href=https://magiconline.github.io/apple-touch-icon.png><meta name=generator content="Hugo 0.98.0"><meta property="og:title" content="生成唯一ID的方式"><meta property="og:description" content="ID生成的要求 全局唯一：
+<link rel=preload as=image href=https://magiconline.github.io/theme.png><link rel=preload as=image href=https://magiconline.github.io/github.svg><link rel=icon href=https://magiconline.github.io/favicon.ico><link rel=apple-touch-icon href=https://magiconline.github.io/apple-touch-icon.png><meta name=generator content="Hugo 0.99.1"><meta property="og:title" content="生成唯一ID的方式"><meta property="og:description" content="ID生成的要求 全局唯一：
 递增：数据库中的索引需要主键有序才能保证高性能
 有序：满足事务、增量消息、排序等特殊需求
 安全：不能为简单的连续ID，防止爬虫等
