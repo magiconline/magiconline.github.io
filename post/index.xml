@@ -1,4 +1,22 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on 魔法张的Blog</title><link>https://magiconline.github.io/post/</link><description>Recent content in Posts on 魔法张的Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Thu, 02 Jun 2022 15:43:33 +0800</lastBuildDate><atom:link href="https://magiconline.github.io/post/index.xml" rel="self" type="application/rss+xml"/><item><title>分布式定时任务</title><link>https://magiconline.github.io/post/%E5%88%86%E5%B8%83%E5%BC%8F%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1/</link><pubDate>Thu, 02 Jun 2022 15:43:33 +0800</pubDate><guid>https://magiconline.github.io/post/%E5%88%86%E5%B8%83%E5%BC%8F%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1/</guid><description>前言 春节集卡瓜分20亿技术 自动化 + 定时执行 + 海量数据 + 高效稳定 = 分布式定时任务
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on 魔法张的Blog</title><link>https://magiconline.github.io/post/</link><description>Recent content in Posts on 魔法张的Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Fri, 03 Jun 2022 14:13:26 +0800</lastBuildDate><atom:link href="https://magiconline.github.io/post/index.xml" rel="self" type="application/rss+xml"/><item><title>带你认识存储数据库</title><link>https://magiconline.github.io/post/%E5%B8%A6%E4%BD%A0%E8%AE%A4%E8%AF%86%E5%AD%98%E5%82%A8%E6%95%B0%E6%8D%AE%E5%BA%93/</link><pubDate>Fri, 03 Jun 2022 14:13:26 +0800</pubDate><guid>https://magiconline.github.io/post/%E5%B8%A6%E4%BD%A0%E8%AE%A4%E8%AF%86%E5%AD%98%E5%82%A8%E6%95%B0%E6%8D%AE%E5%BA%93/</guid><description>经典案例 数据的持久化 校验数据的合法性 修改内存（用高效的数据结构组织数据） 写入存储介质（以寿命&amp;amp;性能友好的方式写入硬件） 潜在问题 数据库怎么保证数据不丢 数据库怎么处理多人同时修改的问题 为什么用数据库，除了数据库还能存到别的存储系统吗 数据库只能处理结构化数据吗 有哪些操作数据库的方式，要用什么编程语言 存储 &amp;amp; 数据库简介 存储系统 一个提供了读写、控制类接口，能够安全有效地把数据持久化的软件，就可以称为存储系统。
+特点：性能敏感、代码简单又复杂、容易受硬件影响。
+数据库 关系：任意元素组成的若干有序偶对
+SQL：一种DSL，方便人类阅读的关系代数的表达形式
+关系型数据库 数据化结构友好、支持事务、支持复杂查询语言SQL。
+非关系型数据库 一般不要求严格的结构化。 半结构化数据友好、可能支持事务、可能支持复杂查询语言。
+数据库 VS 经典存储 结构化数据关系 关系型数据库以表形式管理。
+写入文件，自定义行，管理结构。
+事务能力 数据库支持事务：
+Atomicity：事务内的操作要么全做，要么不做。 Consistency，事务执行前后，数据状态是一致的。 Isolation，可以隔离多个并发事务，避免影响。 Durability，事务一旦提交成功，数据保证持久性。 复杂查询能力 SQL VS 编程语言
+主流产品剖析 单机存储 单机存储：单个计算机节点上的存储软件系统，一般不涉及网络交互。
+本地文件系统 文件系统接口：Ext2/3/4，sysfs，rootfs等，都遵循VFS的统一抽象接口。
+Index Node: 记录文件元数据，如ID，大小、权限、位置等。inode是一个文件的唯一标识，会被存储到磁盘上，inode的总数在格式化文件系统时就固定了。 Directory Entry: 记录文件名、inode指针、层级关系等。dentry是内存结构，与inode的关系是N:1。
+key-value存储 使用方式: put(k, v) &amp;amp; get(k) 常见的数据结构：LSM-Tree 产品：rocksdb
+分布式存储 分布式存储：在单机存储基础上实现了分布式协议，涉及大量网络交互。
+分布式文件系统 HDFS，Ceph
+单机关系型数据库 Oracle、MySQL、PostgreSQL。
+通用组件：
+Query Engine：解析query，生成查询计划 Txn Manager：负责事务并发管理 Lock Manager：负责锁相关的策略 Storage Engine：负责组织内存、磁盘数据结构 Replication：负责主备同步 关键内存数据结构：B-Tree、B+-Tree、LRU List</description></item><item><title>分布式定时任务</title><link>https://magiconline.github.io/post/%E5%88%86%E5%B8%83%E5%BC%8F%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1/</link><pubDate>Thu, 02 Jun 2022 15:43:33 +0800</pubDate><guid>https://magiconline.github.io/post/%E5%88%86%E5%B8%83%E5%BC%8F%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1/</guid><description>前言 春节集卡瓜分20亿技术 自动化 + 定时执行 + 海量数据 + 高效稳定 = 分布式定时任务
 发展历程 单机定时任务 10分钟后Windows电脑自动关机 自动疫情打卡 Linux命令 - CronJob 定时清理机器日志 单机定时任务 Ticker(GO)，定时刷新本地缓存 Quartz 单任务极致控制，没有负载均匀任务 分布式定时任务 平台化管理，分布式部署，支持海量数据
 分布式定时任务是把分散的、可靠性差的定时任务纳入统一的平台，并实现集群管理调度和分布式部署的一种定时任务的管理方式。
 按触发时机分类：
