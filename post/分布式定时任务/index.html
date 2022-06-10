@@ -14,7 +14,7 @@
 Job_id 触发时间 状态&结果 过程信息 触发器 核心职责 给定一系列任务，解析他们的触发规则，在规定的时间点触发任务的调度。
 设计约束：
 需支持大量任务 需支持秒级的任务 周期任务需要多次执行 需保证秒级扫描的高性能，并避免资源浪费 方案1 定时扫描 + 延时消息。"><meta name=author content><link rel="preload stylesheet" as=style href=https://magiconline.github.io/app.min.css><link rel="preload stylesheet" as=style href=https://magiconline.github.io/an-old-hope.min.css><script defer src=https://magiconline.github.io/highlight.min.js onload=hljs.initHighlightingOnLoad()></script>
-<link rel=preload as=image href=https://magiconline.github.io/theme.png><link rel=preload as=image href=https://magiconline.github.io/github.svg><link rel=icon href=https://magiconline.github.io/favicon.ico><link rel=apple-touch-icon href=https://magiconline.github.io/apple-touch-icon.png><meta name=generator content="Hugo 0.100.1"><meta property="og:title" content="分布式定时任务"><meta property="og:description" content="前言 春节集卡瓜分20亿技术 自动化 + 定时执行 + 海量数据 + 高效稳定 = 分布式定时任务
+<link rel=preload as=image href=https://magiconline.github.io/theme.png><link rel=preload as=image href=https://magiconline.github.io/github.svg><link rel=icon href=https://magiconline.github.io/favicon.ico><link rel=apple-touch-icon href=https://magiconline.github.io/apple-touch-icon.png><meta name=generator content="Hugo 0.100.2"><meta property="og:title" content="分布式定时任务"><meta property="og:description" content="前言 春节集卡瓜分20亿技术 自动化 + 定时执行 + 海量数据 + 高效稳定 = 分布式定时任务
 发展历程 单机定时任务 10分钟后Windows电脑自动关机 自动疫情打卡 Linux命令 - CronJob 定时清理机器日志 单机定时任务 Ticker(GO)，定时刷新本地缓存 Quartz 单任务极致控制，没有负载均匀任务 分布式定时任务 平台化管理，分布式部署，支持海量数据
 分布式定时任务是把分散的、可靠性差的定时任务纳入统一的平台，并实现集群管理调度和分布式部署的一种定时任务的管理方式。
 按触发时机分类：
